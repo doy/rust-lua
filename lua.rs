@@ -2,6 +2,9 @@
 
 #[crate_type = "lib"];
 
+use ptr::null;
+use libc::{c_char,c_int};
+
 pub struct State {
     priv state: *lua_State,
 }
@@ -62,10 +65,10 @@ pub fn loadstring(state: State, string: &str) -> Status {
 pub fn call(state: State, nargs: int, nresults: int) {
     lua::lua_callk(
         state.state,
-        nargs as libc::c_int,
-        nresults as libc::c_int,
-        0 as libc::c_int,
-        0 as *lua_CFunction
+        nargs as c_int,
+        nresults as c_int,
+        0 as c_int,
+        null()
     )
 }
 
@@ -77,15 +80,12 @@ extern mod lua {
     fn lua_close(state: *lua_State);
     fn luaL_openlibs(state: *lua_State);
 
-    fn luaL_loadstring(
-        state: *lua_State,
-        string: *libc::c_char
-    ) -> libc::c_int;
+    fn luaL_loadstring(state: *lua_State, string: *c_char) -> c_int;
     fn lua_callk(
         state: *lua_State,
-        nargs: libc::c_int,
-        nresults: libc::c_int,
-        ctx: libc::c_int,
+        nargs: c_int,
+        nresults: c_int,
+        ctx: c_int,
         k: *lua_CFunction
     );
 }
